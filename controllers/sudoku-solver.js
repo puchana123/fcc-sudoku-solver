@@ -14,8 +14,22 @@ class SudokuSolver {
       console.log('not have 81 char')
       return { success: false, message: 'Expected puzzle to be 81 characters long' };
     }
-    console.log('pass')
+    console.log('validate pass')
     return { success: true };
+  }
+
+  coordinateCheck(coordinate){
+    const row = coordinate.match(/^[A-Z]+/gi);
+    const col = coordinate.match(/[1-9]+$/g);
+    const checkOneNumber = /^[1-9]$/g;
+    const checkOneChar = /^[A-I]$/gi;
+    const checkcol = checkOneNumber.test(col);
+    const checkrow = checkOneChar.test(row);
+    if(!checkrow || !checkcol){
+      console.log('invalid coordinate');
+      return false;
+    }
+    return true;
   }
 
   // this function cover all check with array input
@@ -49,7 +63,13 @@ class SudokuSolver {
     return true;
   }
 
-  solve(puzzleString, timeout = 5000) {
+  solve(puzzleString, timeout = 10000) {
+    // check valid puzzle
+    const regex = /[0-9.]/g
+    const valid_string = regex.test(puzzleString);
+    if(!valid_string){
+      return {success: false, message: 'Puzzle cannot be solved'}
+    }
     const board = puzzleString.split('');
     // use Stack to manage bracktracking
     let stack = [];

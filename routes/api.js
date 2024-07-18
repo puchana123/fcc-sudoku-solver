@@ -8,7 +8,31 @@ module.exports = function (app) {
 
   app.route('/api/check')
     .post((req, res) => {
-
+      const {puzzle, coordinate, value} = req.body;
+      // check input value
+      if(!puzzle || !coordinate|| !value){
+        res.json({error: 'Required field(s) missing'});
+        return;
+      };
+      // validate check puzzle input
+      const validate = solver.validate(puzzle)
+      if(!validate.success){
+        res.json({error: validate.message})
+        return;
+      }
+      // check value not 1-9
+      const value_regex = /^[1-9]$/g
+      const isValidValue = value_regex.test(value);
+      if(!isValidValue){
+        res.json({ error: 'Invalid value' });
+        return;
+      }
+      // coordinate check
+      const coordinate_check = solver.coordinateCheck(coordinate);
+      if(!coordinate_check){
+        res.json({error: 'Invalid coordinate'});
+        return;
+      }
     });
     
   app.route('/api/solve')
@@ -18,20 +42,21 @@ module.exports = function (app) {
       // if no input
       if(!puzzle){
         res.json({error: 'Required field missing'});
+        return;
       };
       // validate check input
       const validate = solver.validate(puzzle)
       if(!validate.success){
         res.json({error: validate.message})
+        return;
       }
       // sovle function
       const solved = solver.solve(puzzle);
       if(!solved.success){
         res.json({error: solved.message});
-      }else{
-        console.log('sovled');
-        res.json({solution: solved.solvedString});
+        return;
       }
-
+      console.log('sovled');
+      return res.json({solution: solved.solvedString});
     });
 };

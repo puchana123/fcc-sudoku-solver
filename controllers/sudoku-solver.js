@@ -32,6 +32,52 @@ class SudokuSolver {
     return true;
   }
 
+  // for check api
+  ApiCheck(puzzle,coordinate,num){
+    const board = puzzle.split('');
+    let [row,col] = coordinate.split('');
+    col--;
+    const rowToIndex = row.toUpperCase().charCodeAt(0) - 'A'.charCodeAt(0);
+    let result = {
+      valid: true, conflict: []
+    }
+    // check row
+    for(let i= rowToIndex*9; i<rowToIndex *9+9; i++){
+      if(board[i] === num){
+        result.valid = false
+        result.conflict.push('row')
+      }
+    }
+    // check col
+    for (let i = col; i < 81; i += 9) {
+      if (board[i] === num) {
+        result.valid = false
+        result.conflict.push('column')
+      }
+    }
+    // check region 3x3
+    const regionRowStart = Math.floor(rowToIndex / 3) * 27;
+    const regionColStart = Math.floor(col / 3) * 3;
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        const indexInside = regionRowStart + (i * 9) + regionColStart + j;
+        if (board[indexInside] === num) {
+          result.valid = false
+          result.conflict.push('region')
+        };
+      };
+    };
+    // check index if already have num
+    const index = col + rowToIndex * 9
+    if(board[index] === num){
+      result.valid = true;
+    }
+    if(result.valid){
+      delete result.conflict
+    }
+    return result;
+  }
+
   // this function cover all check with array input
   canPlaceNumber(board, index, num) {
     const row = Math.floor(index / 9);

@@ -33,6 +33,9 @@ module.exports = function (app) {
         res.json({error: 'Invalid coordinate'});
         return;
       }
+      // can place check
+      const placeResult = solver.ApiCheck(puzzle,coordinate,value);
+      res.json(placeResult);
     });
     
   app.route('/api/solve')
